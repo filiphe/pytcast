@@ -8,6 +8,7 @@ youtube-dl = "*"
 pyyaml = "*"
 pytz = "*"
 feedgen = "*"
+neovim = "*"
 
 [dev-packages]
 
