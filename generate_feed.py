@@ -29,6 +29,10 @@ def get_ydl_opts(target_dir):
                 },
                 {'key': 'EmbedThumbnail'},
                 {'key': 'FFmpegMetadata'}, ],
+            'quiet': True,
+            'nooverwrites': True,
+            'ignoreerrors': True,
+            'download_archive': './archive_file.txt',
             }
     return ydl_opts
 
