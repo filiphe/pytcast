@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import os
 import pytz
 import yaml
@@ -8,8 +9,12 @@ import youtube_dl
 from datetime import datetime
 from feedgen.feed import FeedGenerator
 
+parser = argparse.ArgumentParser()
+parser.add_argument('-c', '--config', help='path to configuration', default='config.yml')
+args = parser.parse_args()
 
-with open('config.yml', 'r') as f:
+
+with open(args.config, 'r') as f:
     content = f.read()
     data = yaml.load(content)
 
@@ -21,7 +26,7 @@ def get_ydl_opts(target_dir):
     ydl_opts = {
             'format': 'bestaudio/best',
             'writethumbnail': True,
-            'outtmpl': '{}/%(upload_date)s-%(title)s.%(ext)s'.format(target_dir),
+            'outtmpl': '{}/{}/%(upload_date)s-%(title)s.%(ext)s'.format(config['output_dir'], target_dir),
             'postprocessors': [{
                 'key': 'FFmpegExtractAudio',
                 'preferredcodec': 'mp3',
@@ -29,7 +34,7 @@ def get_ydl_opts(target_dir):
                 },
                 {'key': 'EmbedThumbnail'},
                 {'key': 'FFmpegMetadata'}, ],
-            'quiet': True,
+#            'quiet': True,
             'nooverwrites': True,
             'ignoreerrors': True,
             'download_archive': './archive_file.txt',
@@ -58,7 +63,7 @@ def gen_feed(directory, name, url):
     fg.link(href=url, rel='self')
     fg.language('en')
 
-    for (root, _, files) in os.walk(directory):
+    for (root, _, files) in os.walk(os.path.join(config['output_dir'], directory)):
         for i, f in enumerate(sorted(files)):
             if not f.endswith(".mp3"):
                 continue
@@ -76,7 +81,7 @@ def gen_feed(directory, name, url):
             os.utime(os.path.join(root, f), (time.timestamp(), time.timestamp()))
 
     fg.rss_str(pretty=True)
-    fg.rss_file('{}/feed.rss'.format(directory))
+    fg.rss_file('{}/{}/feed.rss'.format(config['output_dir'], directory))
 
 
 def main():
