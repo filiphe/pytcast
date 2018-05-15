@@ -42,8 +42,25 @@ def get_ydl_opts(target_dir):
     return ydl_opts
 
 
+def get_ydl_thumbnail_opts(target_dir):
+    ydl_opts = {
+            'writethumbnail': True,
+            'nooverwrites': True,
+            'ignoreerrors': True,
+            'skip_download': True,
+            'outtmpl': '{}/{}/logo.%(ext)s'.format(config['output_dir'], target_dir),
+            'playlist_items': '1',
+            }
+    return ydl_opts
+
+
 def download_list(key):
     with youtube_dl.YoutubeDL(get_ydl_opts(key)) as ydl:
+        ydl.download(['{}'.format(get_playlist_url(key))])
+
+
+def download_thumbnail(key):
+    with youtube_dl.YoutubeDL(get_ydl_thumbnail_opts(key)) as ydl:
         ydl.download(['{}'.format(get_playlist_url(key))])
 
 
@@ -61,6 +78,7 @@ def gen_feed(directory, name, url):
     fg.description(name)
     fg.link(href=url, rel='alternate')
     fg.link(href=url, rel='self')
+    fg.logo('{}/{}'.format(url, 'logo.jpg'))
     fg.language('en')
 
     for (root, _, files) in os.walk(os.path.join(config['output_dir'], directory)):
@@ -87,6 +105,7 @@ def gen_feed(directory, name, url):
 def main():
     for podcast in podcasts:
         download_list(podcast)
+        download_thumbnail(podcast)
         gen_feed(podcast, podcasts[podcast]['name'], '{}/{}'.format(config['url_base'], podcast))
 
 
