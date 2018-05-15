@@ -79,6 +79,7 @@ def gen_feed(directory, name, url):
     fg.link(href=url, rel='alternate')
     fg.link(href=url, rel='self')
     fg.logo('{}/{}'.format(url, 'logo.jpg'))
+    fg.podcast.itunes_image('{}/{}'.format(url, 'logo.jpg'))
     fg.language('en')
 
     for (root, _, files) in os.walk(os.path.join(config['output_dir'], directory)):
