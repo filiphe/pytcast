@@ -16,7 +16,7 @@ args = parser.parse_args()
 
 with open(args.config, 'r') as f:
     content = f.read()
-    data = yaml.load(content)
+    data = yaml.safe_load(content)
 
 config = data['general']
 podcasts = data['podcasts']
